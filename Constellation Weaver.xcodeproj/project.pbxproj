@@ -64,12 +64,12 @@
 		AB0000000000000000000027 = {
 			isa = PBXGroup;
 			children = (
-				AB0000000000000000000028 /* Sources */,
+				AB0000000000000000000028 /* Constellation Weaver */,
 				AB0000000000000000000029 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		AB0000000000000000000028 /* Sources */ = {
+		AB0000000000000000000028 /* Constellation Weaver */ = {
 			isa = PBXGroup;
 			children = (
 				AB0000000000000000000001 /* WeaverApp.swift */,
@@ -92,7 +92,7 @@
 				AB0000000000000000000023 /* Assets.xcassets */,
 				AB0000000000000000000025 /* Info.plist */,
 			);
-			path = Sources;
+			path = "Constellation Weaver";
 			sourceTree = "<group>";
 		};
 		AB0000000000000000000029 /* Products */ = {
@@ -258,7 +258,7 @@
 				DEVELOPMENT_TEAM = "";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_FILE = "Constellation Weaver/Info.plist";
 				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -287,7 +287,7 @@
 				DEVELOPMENT_TEAM = "";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = "Sources/Info.plist";
+				INFOPLIST_FILE = "Constellation Weaver/Info.plist";
 				INFOPLIST_KEY_UILaunchScreen_Generation = NO;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
