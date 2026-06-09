@@ -119,30 +119,45 @@ struct WeaverTextField: View {
     @Binding var text: String
     let placeholder: String
 
+    // iOS 15+ focus binding so a tap anywhere on the styled box reliably opens
+    // the keyboard and routes typed characters into the field.
+    @FocusState private var focused: Bool
+
     var body: some View {
         ZStack(alignment: .leading) {
+            // Placeholder sits BEHIND the field (drawn first) so the TextField
+            // stays the top-most, hit-testable child of the ZStack.
             if text.isEmpty {
                 Text(placeholder)
                     .foregroundColor(WeaverTheme.textFaint)
                     .font(.system(size: 16))
                     .padding(.horizontal, 14)
+                    .allowsHitTesting(false)
             }
             TextField("", text: $text)
+                .focused($focused)
                 .foregroundColor(WeaverTheme.textPrimary)
                 .font(.system(size: 16))
                 .padding(.horizontal, 14)
                 .accentColor(WeaverTheme.line)
+                .frame(maxWidth: .infinity)
         }
         .frame(height: 50)
+        .frame(maxWidth: .infinity)
         .background(WeaverTheme.panel)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(WeaverTheme.stroke.opacity(0.6), lineWidth: 1))
+        // Whole box is one hit target that focuses the field on tap.
+        .contentShape(Rectangle())
+        .onTapGesture { focused = true }
     }
 }
 
 struct WeaverTextEditor: View {
     @Binding var text: String
     let placeholder: String
+
+    @FocusState private var focused: Bool
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -152,19 +167,25 @@ struct WeaverTextEditor: View {
                     .font(.system(size: 15))
                     .padding(.horizontal, 16)
                     .padding(.vertical, 14)
+                    .allowsHitTesting(false)
             }
             TextEditor(text: $text)
+                .focused($focused)
                 .foregroundColor(WeaverTheme.textPrimary)
                 .font(.system(size: 15))
                 .padding(.horizontal, 10)
                 .padding(.vertical, 8)
                 .accentColor(WeaverTheme.line)
+                .frame(maxWidth: .infinity)
                 .scrollContentBackgroundHiddenCompat()
         }
         .frame(height: 100)
+        .frame(maxWidth: .infinity)
         .background(WeaverTheme.panel)
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .overlay(RoundedRectangle(cornerRadius: 12).stroke(WeaverTheme.stroke.opacity(0.6), lineWidth: 1))
+        .contentShape(Rectangle())
+        .onTapGesture { focused = true }
     }
 }
 
