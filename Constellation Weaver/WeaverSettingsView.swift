@@ -29,9 +29,62 @@ struct WeaverSettingsView: View {
 
                     // Stats
                     VStack(spacing: 0) {
-                        statRow(label: "Constellations woven", value: "\(store.totalCount)")
+                        statRow(label: "Figures woven", value: "\(store.totalCount)")
+                        divider
+                        statRow(label: "Constellations discovered",
+                                value: "\(store.discoveredCount) of \(WeaverConstellationCatalog.count)")
                         divider
                         statRow(label: "Skies revealed", value: "\(store.unlockedSkyCount) of \(WeaverStore.maxSkies)")
+                    }
+                    .background(WeaverTheme.panel)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(WeaverTheme.stroke.opacity(0.6), lineWidth: 1))
+
+                    // Achievements
+                    VStack(spacing: 0) {
+                        NavigationLink {
+                            WeaverAchievementsView().environmentObject(store)
+                        } label: {
+                            HStack(spacing: 12) {
+                                WeaverTrophyIcon(size: 22, color: WeaverTheme.line)
+                                    .frame(width: 24, height: 24)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Achievements")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(WeaverTheme.textPrimary)
+                                    Text("\(store.unlockedAchievements.count) of \(WeaverAchievementsCatalog.count) earned")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(WeaverTheme.textFaint)
+                                }
+                                Spacer()
+                                WeaverChevron()
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 14)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .background(WeaverTheme.panel)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(WeaverTheme.stroke.opacity(0.6), lineWidth: 1))
+
+                    // How to play / replay intro
+                    VStack(spacing: 0) {
+                        Button { store.replayOnboarding() } label: {
+                            HStack {
+                                Text("How to play")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(WeaverTheme.textPrimary)
+                                Spacer()
+                                Text("Replay intro")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(WeaverTheme.textFaint)
+                                WeaverChevron()
+                            }
+                            .padding(.horizontal, 16).padding(.vertical, 16)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                     .background(WeaverTheme.panel)
                     .clipShape(RoundedRectangle(cornerRadius: 16))

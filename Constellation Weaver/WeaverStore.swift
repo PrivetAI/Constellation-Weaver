@@ -2,24 +2,38 @@ import Foundation
 import SwiftUI
 
 // Central observable store: persists saved constellations + which skies are
-// unlocked. Local JSON file in Application Support — fully offline.
+// unlocked, plus discovered trace targets, onboarding state and achievements.
+// Local JSON file in Application Support — fully offline.
 final class WeaverStore: ObservableObject {
 
     @Published private(set) var constellations: [WeaverConstellation] = []
     @Published private(set) var unlockedSkyCount: Int = 2
+    @Published private(set) var discoveredConstellationIds: Set<String> = []
+    @Published private(set) var unlockedAchievements: Set<String> = []
+    @Published var onboardingDone: Bool = false
 
-    static let maxSkies = 8
+    // The most recently unlocked achievement, for a transient toast. Not persisted.
+    @Published var recentAchievement: WeaverAchievement? = nil
+
+    static let maxSkies = 12
     private let fileName = "weaver_atlas.json"
 
+    // Backward-compatible bundle: new fields are optional on decode so existing
+    // saves (which lack them) load without loss.
     private struct WeaverSaveBundle: Codable {
         var constellations: [WeaverConstellation]
         var unlockedSkyCount: Int
+        var discoveredConstellationIds: [String]?
+        var unlockedAchievements: [String]?
+        var onboardingDone: Bool?
     }
 
     init() {
         load()
         if unlockedSkyCount < 2 { unlockedSkyCount = 2 }
         if unlockedSkyCount > Self.maxSkies { unlockedSkyCount = Self.maxSkies }
+        // Re-evaluate achievements once on launch (no toast on this pass).
+        evaluateAchievements(announce: false)
     }
 
     // MARK: - Derived
@@ -34,11 +48,30 @@ final class WeaverStore: ObservableObject {
         (0..<unlockedSkyCount).map { WeaverSkyGenerator.generate(id: $0) }
     }
 
+    var discoveredCount: Int { discoveredConstellationIds.count }
+
+    func isDiscovered(_ targetId: String) -> Bool {
+        discoveredConstellationIds.contains(targetId)
+    }
+
+    func isAchievementUnlocked(_ id: String) -> Bool {
+        unlockedAchievements.contains(id)
+    }
+
+    var progressSnapshot: WeaverProgressSnapshot {
+        WeaverProgressSnapshot(
+            savedFigures: constellations.count,
+            discoveredConstellations: discoveredConstellationIds.count,
+            totalConstellations: WeaverConstellationCatalog.count,
+            skiesRevealed: unlockedSkyCount)
+    }
+
     // MARK: - Mutations
 
     func add(_ constellation: WeaverConstellation) {
         constellations.insert(constellation, at: 0)
         save()
+        evaluateAchievements(announce: true)
     }
 
     func delete(_ constellation: WeaverConstellation) {
@@ -57,9 +90,46 @@ final class WeaverStore: ObservableObject {
         guard unlockedSkyCount < Self.maxSkies else { return }
         unlockedSkyCount += 1
         save()
+        evaluateAchievements(announce: true)
     }
 
     var canUnlockMore: Bool { unlockedSkyCount < Self.maxSkies }
+
+    func markDiscovered(_ targetId: String) {
+        guard !discoveredConstellationIds.contains(targetId) else { return }
+        discoveredConstellationIds.insert(targetId)
+        save()
+        evaluateAchievements(announce: true)
+    }
+
+    func completeOnboarding() {
+        guard !onboardingDone else { return }
+        onboardingDone = true
+        save()
+    }
+
+    func replayOnboarding() {
+        onboardingDone = false
+        save()
+    }
+
+    // MARK: - Achievements
+
+    private func evaluateAchievements(announce: Bool) {
+        let snap = progressSnapshot
+        var newlyUnlocked: [WeaverAchievement] = []
+        for a in WeaverAchievementsCatalog.all where !unlockedAchievements.contains(a.id) {
+            if a.isEarned(snap) {
+                unlockedAchievements.insert(a.id)
+                newlyUnlocked.append(a)
+            }
+        }
+        guard !newlyUnlocked.isEmpty else { return }
+        save()
+        if announce, let first = newlyUnlocked.first {
+            recentAchievement = first
+        }
+    }
 
     // MARK: - Persistence
 
@@ -80,13 +150,20 @@ final class WeaverStore: ObservableObject {
         if let bundle = try? decoder.decode(WeaverSaveBundle.self, from: data) {
             constellations = bundle.constellations.sorted { $0.createdAt > $1.createdAt }
             unlockedSkyCount = bundle.unlockedSkyCount
+            discoveredConstellationIds = Set(bundle.discoveredConstellationIds ?? [])
+            unlockedAchievements = Set(bundle.unlockedAchievements ?? [])
+            onboardingDone = bundle.onboardingDone ?? false
         }
     }
 
     private func save() {
         guard let url = fileURL() else { return }
-        let bundle = WeaverSaveBundle(constellations: constellations,
-                                      unlockedSkyCount: unlockedSkyCount)
+        let bundle = WeaverSaveBundle(
+            constellations: constellations,
+            unlockedSkyCount: unlockedSkyCount,
+            discoveredConstellationIds: Array(discoveredConstellationIds),
+            unlockedAchievements: Array(unlockedAchievements),
+            onboardingDone: onboardingDone)
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted]

@@ -25,6 +25,11 @@
 		AB0000000000000000000020 /* WeaverWeaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000001F /* WeaverWeaveView.swift */; };
 		AB0000000000000000000022 /* WeaverWebPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000021 /* WeaverWebPanel.swift */; };
 		AB0000000000000000000024 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000023 /* Assets.xcassets */; };
+		AB0000000000000000000041 /* WeaverConstellationCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000040 /* WeaverConstellationCatalog.swift */; };
+		AB0000000000000000000043 /* WeaverAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000042 /* WeaverAchievements.swift */; };
+		AB0000000000000000000045 /* WeaverTraceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000044 /* WeaverTraceView.swift */; };
+		AB0000000000000000000047 /* WeaverAchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000046 /* WeaverAchievementsView.swift */; };
+		AB0000000000000000000049 /* WeaverOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000048 /* WeaverOnboardingView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +51,11 @@
 		AB000000000000000000001F /* WeaverWeaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverWeaveView.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000021 /* WeaverWebPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverWebPanel.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000023 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		AB0000000000000000000040 /* WeaverConstellationCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverConstellationCatalog.swift"; sourceTree = "<group>"; };
+		AB0000000000000000000042 /* WeaverAchievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverAchievements.swift"; sourceTree = "<group>"; };
+		AB0000000000000000000044 /* WeaverTraceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverTraceView.swift"; sourceTree = "<group>"; };
+		AB0000000000000000000046 /* WeaverAchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverAchievementsView.swift"; sourceTree = "<group>"; };
+		AB0000000000000000000048 /* WeaverOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverOnboardingView.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB0000000000000000000026 /* Constellation Weaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Constellation Weaver.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -89,6 +99,11 @@
 				AB000000000000000000001D /* WeaverTheme.swift */,
 				AB000000000000000000001F /* WeaverWeaveView.swift */,
 				AB0000000000000000000021 /* WeaverWebPanel.swift */,
+				AB0000000000000000000040 /* WeaverConstellationCatalog.swift */,
+				AB0000000000000000000042 /* WeaverAchievements.swift */,
+				AB0000000000000000000044 /* WeaverTraceView.swift */,
+				AB0000000000000000000046 /* WeaverAchievementsView.swift */,
+				AB0000000000000000000048 /* WeaverOnboardingView.swift */,
 				AB0000000000000000000023 /* Assets.xcassets */,
 				AB0000000000000000000025 /* Info.plist */,
 			);
@@ -189,6 +204,11 @@
 				AB000000000000000000001E /* WeaverTheme.swift in Sources */,
 				AB0000000000000000000020 /* WeaverWeaveView.swift in Sources */,
 				AB0000000000000000000022 /* WeaverWebPanel.swift in Sources */,
+				AB0000000000000000000041 /* WeaverConstellationCatalog.swift in Sources */,
+				AB0000000000000000000043 /* WeaverAchievements.swift in Sources */,
+				AB0000000000000000000045 /* WeaverTraceView.swift in Sources */,
+				AB0000000000000000000047 /* WeaverAchievementsView.swift in Sources */,
+				AB0000000000000000000049 /* WeaverOnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

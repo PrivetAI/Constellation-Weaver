@@ -36,7 +36,11 @@ enum WeaverSkyGenerator {
         "Silver Tide Field",
         "Ember Hollow Sky",
         "Frostlight Reach",
-        "Twilight Garden"
+        "Twilight Garden",
+        "Harvest Lantern Sky",
+        "Glacier Mirror Field",
+        "Rosefall Expanse",
+        "Midnight Orchard"
     ]
 
     static func generate(id: Int) -> WeaverSky {

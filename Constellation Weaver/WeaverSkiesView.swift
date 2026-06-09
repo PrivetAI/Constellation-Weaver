@@ -47,12 +47,13 @@ struct WeaverSkiesView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("Choose a sky to explore")
+            Text("Choose a sky and weave your own figures")
                 .font(.system(size: 15))
                 .foregroundColor(WeaverTheme.textSecondary)
-            Text("\(store.totalCount) constellation\(store.totalCount == 1 ? "" : "s") woven so far")
+            Text("\(store.totalCount) figure\(store.totalCount == 1 ? "" : "s") woven so far  ·  try Trace to find real constellations")
                 .font(.system(size: 13))
                 .foregroundColor(WeaverTheme.textFaint)
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
