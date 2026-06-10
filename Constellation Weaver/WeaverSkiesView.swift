@@ -13,6 +13,9 @@ struct WeaverSkiesView: View {
                 VStack(alignment: .leading, spacing: 18) {
                     header
 
+                    WeaverDailyCard()
+                        .padding(.horizontal, 16)
+
                     LazyVGrid(columns: columns, spacing: 16) {
                         ForEach(store.unlockedSkies) { sky in
                             NavigationLink {
@@ -35,6 +38,7 @@ struct WeaverSkiesView: View {
                 }
             }
         }
+        .onAppear { store.registerDailyVisit() }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
@@ -110,6 +114,82 @@ private struct WeaverSkyPreview: View {
                              with: .color(WeaverTheme.starCore.opacity(0.25 + s.magnitude * 0.6)))
                 }
             }
+        }
+    }
+}
+
+// Constellation of the Day: a deterministic daily pick (by date) shown at the
+// top of the landing tab. Displays its figure, name and fact, the current return
+// streak, and a button into its Sky-Guide detail page.
+private struct WeaverDailyCard: View {
+    @EnvironmentObject var store: WeaverStore
+
+    private var target: WeaverTarget { store.dailyTarget() }
+    private var accent: Color { WeaverTheme.accent(target.hueIndex) }
+
+    var body: some View {
+        NavigationLink {
+            WeaverGuideDetailView(target: target)
+        } label: {
+            VStack(alignment: .leading, spacing: 0) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16).fill(WeaverTheme.skyTop)
+                    WeaverTargetFigure(target: target, revealed: true)
+                        .padding(16)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                    VStack {
+                        HStack {
+                            Text("CONSTELLATION OF THE DAY")
+                                .font(.system(size: 10, weight: .semibold))
+                                .foregroundColor(WeaverTheme.textFaint)
+                                .padding(.horizontal, 10).padding(.vertical, 5)
+                                .background(Capsule().fill(WeaverTheme.panel.opacity(0.9)))
+                            Spacer()
+                            streakBadge
+                        }
+                        Spacer()
+                    }
+                    .padding(12)
+                }
+                .frame(height: 180)
+
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 8) {
+                        Text(target.name)
+                            .font(.system(size: 19, weight: .semibold, design: .serif))
+                            .foregroundColor(WeaverTheme.textPrimary)
+                        Spacer()
+                        Text("Open guide")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundColor(accent)
+                    }
+                    Text(target.fact)
+                        .font(.system(size: 13))
+                        .foregroundColor(WeaverTheme.textSecondary)
+                        .lineLimit(2)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(14)
+            }
+            .background(WeaverTheme.panel)
+            .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(RoundedRectangle(cornerRadius: 16).stroke(accent.opacity(0.45), lineWidth: 1))
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var streakBadge: some View {
+        if store.dailyStreak > 0 {
+            HStack(spacing: 5) {
+                WeaverStreakIcon(size: 14, color: accent)
+                    .frame(width: 14, height: 14)
+                Text("\(store.dailyStreak)-day streak")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundColor(WeaverTheme.textPrimary)
+            }
+            .padding(.horizontal, 10).padding(.vertical, 5)
+            .background(Capsule().fill(WeaverTheme.panelRaised.opacity(0.95)))
         }
     }
 }

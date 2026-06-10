@@ -12,6 +12,13 @@ final class WeaverStore: ObservableObject {
     @Published private(set) var unlockedAchievements: Set<String> = []
     @Published var onboardingDone: Bool = false
 
+    // Daily return streak. lastDailyDay is the en_US_POSIX yyyy-MM-dd string of
+    // the most recent day the user opened the daily; dailyStreak is the current
+    // consecutive-day run, bestDailyStreak the record. Additive + backward-safe.
+    @Published private(set) var lastDailyDay: String = ""
+    @Published private(set) var dailyStreak: Int = 0
+    @Published private(set) var bestDailyStreak: Int = 0
+
     // The most recently unlocked achievement, for a transient toast. Not persisted.
     @Published var recentAchievement: WeaverAchievement? = nil
 
@@ -26,6 +33,9 @@ final class WeaverStore: ObservableObject {
         var discoveredConstellationIds: [String]?
         var unlockedAchievements: [String]?
         var onboardingDone: Bool?
+        var lastDailyDay: String?
+        var dailyStreak: Int?
+        var bestDailyStreak: Int?
     }
 
     init() {
@@ -131,6 +141,69 @@ final class WeaverStore: ObservableObject {
         }
     }
 
+    // MARK: - Constellation of the Day + return streak
+
+    // A shared, stable formatter: en_US_POSIX yyyy-MM-dd, current calendar/zone.
+    private static let dayFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.calendar = Calendar(identifier: .gregorian)
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+
+    static func dayKey(for date: Date) -> String { dayFormatter.string(from: date) }
+
+    // Deterministic pick of the day's constellation from its date string.
+    func dailyTarget(for date: Date = Date()) -> WeaverTarget {
+        let targets = WeaverConstellationCatalog.targets
+        guard !targets.isEmpty else {
+            // Should never happen; catalog is non-empty.
+            return WeaverConstellationCatalog.targets.first!
+        }
+        let key = Self.dayKey(for: date)
+        // Stable FNV-1a style hash over the date string → index.
+        var hash: UInt64 = 0xcbf29ce484222325
+        for byte in key.utf8 {
+            hash ^= UInt64(byte)
+            hash = hash &* 0x100000001b3
+        }
+        let index = Int(hash % UInt64(targets.count))
+        return targets[index]
+    }
+
+    // Days that count as "yesterday" relative to today's key, to detect a streak
+    // continuation vs a reset. Uses the gregorian calendar.
+    private func dayKey(offsetDays: Int, from date: Date) -> String? {
+        let cal = Calendar(identifier: .gregorian)
+        guard let d = cal.date(byAdding: .day, value: offsetDays, to: date) else { return nil }
+        return Self.dayKey(for: d)
+    }
+
+    // Call when the user opens / views the daily. Increments the streak once per
+    // calendar day; a missed day (gap) resets the streak to 1.
+    func registerDailyVisit(date: Date = Date()) {
+        let today = Self.dayKey(for: date)
+        if lastDailyDay == today { return } // already counted today
+
+        let yesterday = dayKey(offsetDays: -1, from: date)
+        if lastDailyDay.isEmpty {
+            dailyStreak = 1
+        } else if lastDailyDay == yesterday {
+            dailyStreak += 1            // consecutive day
+        } else {
+            dailyStreak = 1            // gap → reset
+        }
+        lastDailyDay = today
+        if dailyStreak > bestDailyStreak { bestDailyStreak = dailyStreak }
+        save()
+    }
+
+    // True once the user has opened today's daily (so the card can reflect it).
+    func hasVisitedToday(date: Date = Date()) -> Bool {
+        lastDailyDay == Self.dayKey(for: date)
+    }
+
     // MARK: - Persistence
 
     private func fileURL() -> URL? {
@@ -153,6 +226,9 @@ final class WeaverStore: ObservableObject {
             discoveredConstellationIds = Set(bundle.discoveredConstellationIds ?? [])
             unlockedAchievements = Set(bundle.unlockedAchievements ?? [])
             onboardingDone = bundle.onboardingDone ?? false
+            lastDailyDay = bundle.lastDailyDay ?? ""
+            dailyStreak = bundle.dailyStreak ?? 0
+            bestDailyStreak = bundle.bestDailyStreak ?? 0
         }
     }
 
@@ -163,7 +239,10 @@ final class WeaverStore: ObservableObject {
             unlockedSkyCount: unlockedSkyCount,
             discoveredConstellationIds: Array(discoveredConstellationIds),
             unlockedAchievements: Array(unlockedAchievements),
-            onboardingDone: onboardingDone)
+            onboardingDone: onboardingDone,
+            lastDailyDay: lastDailyDay,
+            dailyStreak: dailyStreak,
+            bestDailyStreak: bestDailyStreak)
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         encoder.outputFormatting = [.prettyPrinted]

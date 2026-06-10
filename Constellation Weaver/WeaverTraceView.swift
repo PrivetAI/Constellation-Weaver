@@ -1,9 +1,10 @@
 import SwiftUI
 
-// Trace tab: BOTH the challenge list AND the collection. A grid of every target
-// constellation — locked (silhouette / "?") vs discovered (the traced figure +
-// name) — with an "X / N discovered" progress header. Tapping a target opens the
-// weave view in trace mode for that constellation.
+// Trace tab: BOTH the challenge list AND the collection, organized into themed
+// Collections/Sets. Each set is a section with a name, a "k of n discovered"
+// progress bar and a completion badge when fully collected, followed by that
+// set's constellation cards. An overall "X / N discovered" header sits on top.
+// Tapping a card opens its Sky-Guide detail page (which starts the trace).
 struct WeaverTraceView: View {
     @EnvironmentObject var store: WeaverStore
 
@@ -14,24 +15,14 @@ struct WeaverTraceView: View {
             WeaverTheme.backgroundGradient.ignoresSafeArea()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                VStack(alignment: .leading, spacing: 24) {
                     header
 
-                    LazyVGrid(columns: columns, spacing: 14) {
-                        ForEach(WeaverConstellationCatalog.targets) { target in
-                            NavigationLink {
-                                WeaverWeaveView(sky: WeaverTraceSky.make(for: target),
-                                                mode: .trace(target))
-                            } label: {
-                                WeaverTraceCard(target: target,
-                                                discovered: store.isDiscovered(target.id))
-                            }
-                            .buttonStyle(.plain)
-                        }
+                    ForEach(WeaverSets.all) { set in
+                        section(for: set)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 24)
                 }
+                .padding(.bottom, 24)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -44,6 +35,29 @@ struct WeaverTraceView: View {
         }
     }
 
+    @ViewBuilder
+    private func section(for set: WeaverSet) -> some View {
+        let members = set.members
+        let found = members.filter { store.isDiscovered($0.id) }.count
+        VStack(alignment: .leading, spacing: 12) {
+            WeaverSetSectionHeader(set: set, found: found, total: members.count)
+                .padding(.horizontal, 16)
+
+            LazyVGrid(columns: columns, spacing: 14) {
+                ForEach(members) { target in
+                    NavigationLink {
+                        WeaverGuideDetailView(target: target)
+                    } label: {
+                        WeaverTraceCard(target: target,
+                                        discovered: store.isDiscovered(target.id))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+
     private var header: some View {
         let discovered = store.discoveredCount
         let total = WeaverConstellationCatalog.count
@@ -51,7 +65,7 @@ struct WeaverTraceView: View {
             Text("Real constellations to find")
                 .font(.system(size: 15))
                 .foregroundColor(WeaverTheme.textSecondary)
-            Text("Pick one, follow the faint guide, and connect its marked stars to discover it.")
+            Text("Browse the collections below, open a Sky Guide, then follow the faint guide to connect its stars.")
                 .font(.system(size: 13))
                 .foregroundColor(WeaverTheme.textFaint)
                 .fixedSize(horizontal: false, vertical: true)
@@ -74,6 +88,60 @@ struct WeaverTraceView: View {
         }
         .padding(.horizontal, 16)
         .padding(.top, 8)
+    }
+}
+
+// A set's section header: name + subtitle, a k/n progress bar in the set's
+// accent, and a completion badge once every member is discovered.
+private struct WeaverSetSectionHeader: View {
+    let set: WeaverSet
+    let found: Int
+    let total: Int
+
+    private var complete: Bool { total > 0 && found == total }
+    private var accent: Color { WeaverTheme.accent(set.accentHue) }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .center, spacing: 10) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(set.name)
+                        .font(.system(size: 19, weight: .semibold, design: .serif))
+                        .foregroundColor(WeaverTheme.textPrimary)
+                    Text(set.subtitle)
+                        .font(.system(size: 12))
+                        .foregroundColor(WeaverTheme.textFaint)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 8)
+                if complete {
+                    HStack(spacing: 6) {
+                        WeaverBadgeIcon(size: 22, color: accent)
+                            .frame(width: 24, height: 24)
+                        Text("Complete")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(accent)
+                    }
+                    .padding(.horizontal, 10).padding(.vertical, 6)
+                    .background(Capsule().fill(WeaverTheme.panelRaised))
+                }
+            }
+
+            HStack(spacing: 8) {
+                Text("\(found) of \(total) discovered")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(complete ? accent : WeaverTheme.textSecondary)
+                GeometryReader { g in
+                    ZStack(alignment: .leading) {
+                        Capsule().fill(WeaverTheme.panelRaised)
+                        Capsule()
+                            .fill(accent)
+                            .frame(width: total == 0 ? 0 : g.size.width * CGFloat(found) / CGFloat(total))
+                    }
+                }
+                .frame(height: 6)
+            }
+        }
     }
 }
 

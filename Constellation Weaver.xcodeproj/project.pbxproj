@@ -30,6 +30,8 @@
 		AB0000000000000000000045 /* WeaverTraceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000044 /* WeaverTraceView.swift */; };
 		AB0000000000000000000047 /* WeaverAchievementsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000046 /* WeaverAchievementsView.swift */; };
 		AB0000000000000000000049 /* WeaverOnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000000048 /* WeaverOnboardingView.swift */; };
+		AB000000000000000000004B /* WeaverSets.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000004A /* WeaverSets.swift */; };
+		AB000000000000000000004D /* WeaverGuideDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000000000000000000004C /* WeaverGuideDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -56,6 +58,8 @@
 		AB0000000000000000000044 /* WeaverTraceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverTraceView.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000046 /* WeaverAchievementsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverAchievementsView.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000048 /* WeaverOnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverOnboardingView.swift"; sourceTree = "<group>"; };
+		AB000000000000000000004A /* WeaverSets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverSets.swift"; sourceTree = "<group>"; };
+		AB000000000000000000004C /* WeaverGuideDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeaverGuideDetailView.swift"; sourceTree = "<group>"; };
 		AB0000000000000000000025 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB0000000000000000000026 /* Constellation Weaver.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Constellation Weaver.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -104,6 +108,8 @@
 				AB0000000000000000000044 /* WeaverTraceView.swift */,
 				AB0000000000000000000046 /* WeaverAchievementsView.swift */,
 				AB0000000000000000000048 /* WeaverOnboardingView.swift */,
+				AB000000000000000000004A /* WeaverSets.swift */,
+				AB000000000000000000004C /* WeaverGuideDetailView.swift */,
 				AB0000000000000000000023 /* Assets.xcassets */,
 				AB0000000000000000000025 /* Info.plist */,
 			);
@@ -209,6 +215,8 @@
 				AB0000000000000000000045 /* WeaverTraceView.swift in Sources */,
 				AB0000000000000000000047 /* WeaverAchievementsView.swift in Sources */,
 				AB0000000000000000000049 /* WeaverOnboardingView.swift in Sources */,
+				AB000000000000000000004B /* WeaverSets.swift in Sources */,
+				AB000000000000000000004D /* WeaverGuideDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

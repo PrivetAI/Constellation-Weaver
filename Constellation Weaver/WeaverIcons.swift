@@ -373,6 +373,94 @@ struct WeaverTrophyIcon: View {
     }
 }
 
+// Completion badge: a star-burst medallion for a fully collected set.
+struct WeaverBadgeIcon: View {
+    var size: CGFloat = 24
+    var color: Color = WeaverTheme.textPrimary
+
+    var body: some View {
+        GeometryReader { geo in
+            let c = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
+            let r = min(geo.size.width, geo.size.height) / 2
+            ZStack {
+                // scalloped medallion rim
+                WeaverScallopShape(bumps: 12)
+                    .fill(color.opacity(0.22))
+                WeaverScallopShape(bumps: 12)
+                    .stroke(color, lineWidth: size * 0.05)
+                // inner star
+                Path { p in
+                    let pts = 5
+                    let total = pts * 2
+                    let outer = r * 0.46
+                    let inner = outer * 0.42
+                    for i in 0..<total {
+                        let a = (CGFloat(i) / CGFloat(total)) * 2 * .pi - .pi / 2
+                        let rad = (i % 2 == 0) ? outer : inner
+                        let pt = CGPoint(x: c.x + cos(a) * rad, y: c.y + sin(a) * rad)
+                        if i == 0 { p.move(to: pt) } else { p.addLine(to: pt) }
+                    }
+                    p.closeSubpath()
+                }
+                .fill(color)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
+// A scalloped circle (flower / rosette rim) used by the completion badge.
+struct WeaverScallopShape: Shape {
+    var bumps: Int = 12
+    func path(in rect: CGRect) -> Path {
+        var p = Path()
+        let c = CGPoint(x: rect.midX, y: rect.midY)
+        let outer = min(rect.width, rect.height) / 2
+        let inner = outer * 0.84
+        let steps = max(bumps, 3) * 2
+        for i in 0..<steps {
+            let a = (CGFloat(i) / CGFloat(steps)) * 2 * .pi
+            let rad = (i % 2 == 0) ? outer : inner
+            let pt = CGPoint(x: c.x + cos(a) * rad, y: c.y + sin(a) * rad)
+            if i == 0 { p.move(to: pt) } else { p.addLine(to: pt) }
+        }
+        p.closeSubpath()
+        return p
+    }
+}
+
+// A small flame / streak icon for the daily return streak.
+struct WeaverStreakIcon: View {
+    var size: CGFloat = 24
+    var color: Color = WeaverTheme.textPrimary
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width, h = geo.size.height
+            ZStack {
+                Path { p in
+                    p.move(to: CGPoint(x: 0.50 * w, y: 0.08 * h))
+                    p.addCurve(to: CGPoint(x: 0.82 * w, y: 0.58 * h),
+                               control1: CGPoint(x: 0.66 * w, y: 0.22 * h),
+                               control2: CGPoint(x: 0.82 * w, y: 0.38 * h))
+                    p.addCurve(to: CGPoint(x: 0.50 * w, y: 0.94 * h),
+                               control1: CGPoint(x: 0.82 * w, y: 0.80 * h),
+                               control2: CGPoint(x: 0.68 * w, y: 0.94 * h))
+                    p.addCurve(to: CGPoint(x: 0.18 * w, y: 0.58 * h),
+                               control1: CGPoint(x: 0.32 * w, y: 0.94 * h),
+                               control2: CGPoint(x: 0.18 * w, y: 0.80 * h))
+                    p.addCurve(to: CGPoint(x: 0.42 * w, y: 0.30 * h),
+                               control1: CGPoint(x: 0.18 * w, y: 0.44 * h),
+                               control2: CGPoint(x: 0.30 * w, y: 0.42 * h))
+                    p.closeSubpath()
+                }
+                .fill(color)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 // Lock icon for locked skies.
 struct WeaverLockIcon: View {
     var size: CGFloat = 24
